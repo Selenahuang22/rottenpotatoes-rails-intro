@@ -19,19 +19,29 @@ class MoviesController < ApplicationController
     @movies = Movie.with_ratings(checked_ratings)
 
     
-    @sorted = params[:sorted]
+    @sorted = params[:sorted] || session[:sorted]
+    session[:ratings] = session[:ratings] || {'G'=>'', 'PG'=>'','PG-13'=>'','R'=>''}
+    @t_param = params[:ratings] || session[:ratings]
+    session[:sorted] = @sorted
+    session[:ratings] = @t_param
+
     @aclass1 = ""
     @aclass2 = ""
     if @sorted == 'title'
       @aclass1 = 'hilite p-3 mb-2 bg-warning text-dark'
-      @movies = Movie.all.order('title')
+      @movies = Movie.where(rating: session[:ratings].keys).order('title')
     elsif @sorted == 'release_date'
       @aclass2 = 'hilite p-3 mb-2 bg-warning text-dark'
-      @movies = Movie.all.order('release_date')
+      @movies = Movie.where(rating: session[:ratings].keys).order('release_date')
+    end
+  
+    if (params[:sorted].nil? and !(session[:sorted].nil?)) or (params[:ratings].nil? and !(session[:ratings].nil?))
+      flash.keep
+      redirect_to movies_path(sorted: session[:sorted], ratings: session[:ratings])
     end
 
-
   end
+
 
   def new
     # default: render 'new' template

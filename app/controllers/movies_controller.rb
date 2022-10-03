@@ -17,6 +17,20 @@ class MoviesController < ApplicationController
 
     @all_ratings = Movie.all_ratings
     @movies = Movie.with_ratings(checked_ratings)
+
+    
+    @sorted = params[:sorted]
+    @aclass1 = ""
+    @aclass2 = ""
+    if @sorted == 'title'
+      @aclass1 = 'hilite p-3 mb-2 bg-warning text-dark'
+      @movies = Movie.all.order('title')
+    elsif @sorted == 'release_date'
+      @aclass2 = 'hilite p-3 mb-2 bg-warning text-dark'
+      @movies = Movie.all.order('release_date')
+    end
+
+
   end
 
   def new
